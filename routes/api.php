@@ -17,6 +17,14 @@ use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'public'], function() {
     Route::get('/users','UserController@accounts');
+    Route::get('/cources','CourseController@getAll');
+    Route::get('/getData','UserController@getAll');
+    Route::post('/addCource','CourseController@create');
+    Route::get('/students','UserController@getStudents');
+    Route::get('/teachers','CourseController@getTeachers');
+    Route::get('/excel','StudentController@create');
+
+
     Route::post('/reset-pass/{id}','UserController@resetPass');
     Route::post('/check-reset-code','UserController@checkResetCode');
     Route::post('/send-reset-code/{id}','UserController@sendResetCode');

@@ -47,7 +47,18 @@ Route::get('/user/{id}', function () {
 Route::get('/control', function () {
     return view('app');
 });
-
+Route::get('/addCource', function () {
+    return view('app');
+});
+Route::get('/cources', function () {
+    return view('app');
+});
+Route::get('/students', function () {
+    return view('app');
+});
+Route::get('/teachers', function () {
+    return view('app');
+});
 Route::get('/control/{path}', function () {
     return view('app');
 });

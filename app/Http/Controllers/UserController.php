@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\Role;
+
 use App\php;
 use App\UserPasswordReset;
 use Carbon\Carbon;
@@ -20,12 +22,42 @@ class UserController extends Controller
             ->get();
         return $users;
     }
+    public function getAll()
+    {
+        $teacher_role_id=Role::where('name','teacher')->pluck('id');
+        $student_role_id=Role::where('name','student')->pluck('id');
+        Log:info($student_role_id);
+        $teachers=User::where('role_id',$teacher_role_id[0])->orderBy('id','desc')->get();
+        $students=User::where('role_id',$student_role_id[0])->orderBy('id','desc')->get();
+        return [$teachers,$students];
+    }
+    public function getStudents(Request $request)
+    {
+        $search_text = $request['search_text'];
+        $search_teacher = $request['selected_teacher'];
+        $res=User::with('cources.user')->filter(Input::all())->whereHas('role', function($q) {
+            $q->where('roles.name','student');
+            })->get();
+        $teachers=User::whereHas('role', function($q) {
+            $q->where('roles.name','teacher');  })->get();
+            
+        return   [$res,$teachers];
 
+    }
+    
+    
+    
 
     public function items(Request $request)
     {
 
         
+        return User::with('role')->filter(Input::all())->orderBy('id', 'desc')->paginate(20);
+        
+
+    }
+    public function searchStudent(Request $request)
+    {
         return User::with('role')->filter(Input::all())->orderBy('id', 'desc')->paginate(20);
         
 

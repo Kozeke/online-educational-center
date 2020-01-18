@@ -45,7 +45,22 @@ class User extends Authenticatable
         ];
     }
 
-
+    // public function cources(){
+    //     return $this->hasMany("App\student_cources");
+    // }
+    // public function courcesForTeacher(){
+    //     return $this->hasMany("App\cource");
+    // }
+    public function cources(){
+        return $this->belongsToMany('App\Cource');
+    }
+    public function courcesBelong(){
+        return $this->hasMany('App\Cource');
+    }
+    
+    public function user(){
+        return $this->belongsTo('App\User','id');
+    }
     public function toArray()
     {
         $array = parent::toArray();
@@ -98,27 +113,62 @@ class User extends Authenticatable
      * @param $filters
      * @return \Illuminate\Database\Eloquent\Builder mixed
      */
+    // public function scopeFilter($query, $filters)
+    // {
+
+    //     if(isset($filters['search_text'])){
+    //         $search_text = $filters['search_text'];
+
+    //         $query->where(function($query) use($search_text) {
+    //             $query->where('name', 'like', '%'.$search_text.'%');
+    //             $query->orWhere('email', 'like', '%'.$search_text.'%');
+    //             $query->orWhere('phone', 'like', '%'.$search_text.'%');
+    //         });
+    //     }
+
+    //     $query->whereHas('role', function($query) {
+    //         $query->where('name', 'administrator');
+    //     });
+
+    //     return $query;
+    // }
+
     public function scopeFilter($query, $filters)
     {
+        // Log:info("log"+$filters);
+        // Log:info($query->get());
 
         if(isset($filters['search_text'])){
             $search_text = $filters['search_text'];
-
-            $query->where(function($query) use($search_text) {
-                $query->where('name', 'like', '%'.$search_text.'%');
-                $query->orWhere('email', 'like', '%'.$search_text.'%');
-                $query->orWhere('phone', 'like', '%'.$search_text.'%');
+            $query->whereHas('cources', function($q) use ($search_text){
+                $q->where('name', 'LIKE', '%' . $search_text . '%');
             });
         }
+        if(isset($filters['selected_teacher'])){
+                    Log:info($query->get());
 
-        $query->whereHas('role', function($query) {
-            $query->where('name', 'administrator');
-        });
+            $search_teacher = $filters['selected_teacher'];
+                $query->whereHas('cources.user', function($q) use ($search_teacher){
+                    $q->where('name','LIKE', '%' . $search_teacher . '%');
+            });
+        }
+            // Log:info($query;
+            // $query->whereHas('cources', function($q) {
+            //     $q->where('cources.name','like', '%' . $search_text . '%');
+            // });
+
+            // $query->where(function($query) use($search_text) {
+            //     Log:info($query->get());
+            //     $query->where('cources.name', 'like', '%'.$search_text.'%');
+            // });
+        
+
+        // $query->whereHas('role', function($query) {
+        //     $query->where('name', 'administrator');
+        // });
 
         return $query;
     }
-
-
     /**
      * @param $roles
      * @return bool
